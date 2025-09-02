@@ -1,86 +1,114 @@
 <!DOCTYPE html>
-<div id="fortuneModal" class="fortune-modal" role="dialog" aria-modal="true" aria-hidden="true">
-<div class="fortune-content" role="document" aria-live="polite">
-<div id="cookie" class="cookie" aria-hidden="false">🍪</div>
-<div id="fortuneText" tabindex="0"></div>
-<button id="fortuneBtn" class="fortuneBtn">Ver a sorte do dia</button>
-</div>
-</div>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Biscoito da Sorte (Horóscopo)</title>
+  <style>
+    :root{--bg:#f5f7fb;--card:#ffffff;--accent:#d97706;--text:#0f172a;}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    body{background:linear-gradient(180deg,#f8fafc,#eef2ff);display:flex;align-items:center;justify-content:center;padding:28px;color:var(--text)}
+    .page{max-width:720px;width:100%;text-align:center}
+    .instruction{margin-bottom:20px;font-size:16px;}
+    .btn{padding:12px 20px;border-radius:8px;border:0;font-weight:700;cursor:pointer;background:linear-gradient(90deg,#f59e0b,#f97316);color:white;}
+    .fortune-modal{display:none;position:fixed;inset:0;align-items:center;justify-content:center;background:rgba(2,6,23,.5);backdrop-filter:blur(2px);z-index:9999}
+    .fortune-content{background:var(--card);padding:18px;border-radius:12px;max-width:420px;width:92%;box-shadow:0 20px 50px rgba(2,6,23,.35);text-align:center;color:var(--text)}
+    .cookie{font-size:72px;cursor:pointer;display:block;margin:6px auto;animation:pulse 1.2s infinite}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+    #fortuneText{display:none;margin-top:10px;font-size:18px;line-height:1.4}
+    .fortuneBtn{margin-top:14px;padding:10px 14px;border-radius:8px;border:0;font-weight:700;cursor:pointer;background:linear-gradient(90deg,#f59e0b,#f97316);color:white;display:none;}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>Biscoito da Sorte 🍪</h1>
+    <p class="instruction">Quando o biscoito aparecer, clique nele e veja sua sorte!</p>
+    <button id="openCookieBtn" class="btn">Abrir Biscoito da Sorte</button>
+  </main>
 
+  <div id="fortuneModal" class="fortune-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="fortune-content" role="document" aria-live="polite">
+      <div id="cookie" class="cookie" aria-hidden="false">🍪</div>
+      <div id="fortuneText" tabindex="0"></div>
+      <button id="fortuneBtn" class="fortuneBtn">Ver a sorte do dia</button>
+    </div>
+  </div>
 
-<script>
-(function(){
-const FORTUNES = [
-"A sorte sorrirá para você hoje!",
-"Grandes mudanças estão a caminho.",
-"Confie em si mesmo e tudo será possível.",
-"Uma oportunidade inesperada surgirá.",
-"Você está prestes a viver algo incrível.",
-"Seu esforço será recompensado em breve.",
-"Uma surpresa agradável espera por você.",
-"A sua persistência vai valer a pena."
-];
+  <script>
+    (function(){
+      const FORTUNES = [
+        "Hoje, seu charme estará em alta. Alguém pode se apaixonar pelo seu jeito inesperado 😏✨",
+        "Evite decisões precipitadas hoje, ou a galinha guerreira vai reclamar 🐔⚔️",
+        "Segura o forninho, Giovana! Surpresas positivas estão a caminho 🔥",
+        "Morango do Amor recomenda: faça algo doce hoje e sua sorte vai crescer 🍓💖",
+        "O universo conspira a seu favor, mas cuidado com fofocas – nem tudo é como parece 🌌👀",
+        "Hoje você pode rir de situações inesperadas e até criar memes na vida real 😂",
+        "Amor e risadas caminham lado a lado hoje. Prepare-se para encontros divertidos 💌",
+        "O dia pede coragem. Lembre-se da galinha guerreira: lute pelo que deseja 🐔💪",
+        "Seja ousado em pequenas aventuras: a sorte aprecia quem arrisca ✨🚀",
+        "Palavras podem criar magia hoje. Use seu charme e verá portas se abrindo 🗝️💫",
+        "Um amigo pode te surpreender com uma notícia inesperada. Esteja pronto 🤗",
+        "Segredos do destino revelam: seu humor pode contagiar todos ao redor 😎",
+        "Morango do Amor alerta: cuide de quem você ama, hoje é dia de gestos doces 🍓❤️",
+        "Hoje é perfeito para projetos criativos. A inspiração estará à sua volta 🎨✨",
+        "Evite confusões e fofocas: sua sorte depende de manter a calma e o bom humor 😌",
+        "Surpresas pequenas trarão alegria. Observe os detalhes e se surpreenda 🌸",
+        "Seu signo recomenda: seja generoso com quem precisa, a energia positiva volta pra você ✨",
+        "O dia pode trazer encontros inesperados. Esteja atento às oportunidades de amizade 🤝",
+        "Ria das situações do cotidiano; o universo recompensa quem leva a vida com leveza 😂",
+        "Prepare-se: pequenas aventuras e alegrias virão sem avisar. Segura o forninho! 🔥"
+      ];
 
+      const openCookieBtn = document.getElementById('openCookieBtn');
+      const modal  = document.getElementById('fortuneModal');
+      const cookie = document.getElementById('cookie');
+      const fortuneText = document.getElementById('fortuneText');
+      const fortuneBtn = document.getElementById('fortuneBtn');
 
-const openCookieBtn = document.getElementById('openCookieBtn');
-const modal = document.getElementById('fortuneModal');
-const cookie = document.getElementById('cookie');
-const fortuneText = document.getElementById('fortuneText');
-const fortuneBtn = document.getElementById('fortuneBtn');
+      function openModal(){
+        const today = new Date().toISOString().split('T')[0];
+        const lastOpened = localStorage.getItem('sorteData');
 
+        if(lastOpened === today){
+          alert("Você já abriu sua sorte hoje! 🍀");
+          return;
+        }
 
-function openModal(){
-const today = new Date().toISOString().split('T')[0];
-const lastOpened = localStorage.getItem('sorteData');
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden','false');
+        cookie.style.display = 'block';
+        cookie.textContent = '🍪';
+        fortuneText.style.display = 'none';
+        fortuneBtn.style.display = 'none';
+      }
 
+      function showFortune(){
+        const today = new Date().toISOString().split('T')[0];
+        const lastOpened = localStorage.getItem('sorteData');
 
-if(lastOpened === today){
-alert("Você já abriu sua sorte hoje! 🍀");
-return;
-}
+        if(lastOpened === today) return;
 
+        const idx = Math.floor(Math.random() * FORTUNES.length);
+        fortuneText.textContent = FORTUNES[idx];
+        cookie.textContent = '💥🍪';
 
-modal.style.display = 'flex';
-modal.setAttribute('aria-hidden','false');
-cookie.style.display = 'block';
-cookie.textContent = '🍪';
-fortuneText.style.display = 'none';
-fortuneBtn.style.display = 'none';
-}
+        localStorage.setItem('sorteData', today);
 
+        setTimeout(() => {
+          cookie.style.display = 'none';
+          fortuneText.style.display = 'block';
+          fortuneBtn.style.display = 'inline-block';
+        }, 500);
+      }
 
-function showFortune(){
-const today = new Date().toISOString().split('T')[0];
-const lastOpened = localStorage.getItem('sorteData');
+      openCookieBtn.addEventListener('click', openModal);
+      cookie.addEventListener('click', showFortune);
+      fortuneBtn.addEventListener('click', () => { modal.style.display='none'; });
 
-
-if(lastOpened === today) return;
-
-
-const idx = Math.floor(Math.random() * FORTUNES.length);
-fortuneText.textContent = FORTUNES[idx];
-cookie.textContent = '💥🍪';
-
-
-localStorage.setItem('sorteData', today);
-
-
-setTimeout(() => {
-cookie.style.display = 'none';
-fortuneText.style.display = 'block';
-fortuneBtn.style.display = 'inline-block';
-}, 500);
-}
-
-
-openCookieBtn.addEventListener('click', openModal);
-cookie.addEventListener('click', showFortune);
-fortuneBtn.addEventListener('click', () => { modal.style.display='none'; });
-
-
-document.addEventListener('keydown', (ev) => { if(ev.key==='Escape') modal.style.display='none'; });
-modal.addEventListener('click', (ev) => { if(ev.target===modal) modal.style.display='none'; });
-})();
-</script>
+      document.addEventListener('keydown', (ev) => { if(ev.key==='Escape') modal.style.display='none'; });
+      modal.addEventListener('click', (ev) => { if(ev.target===modal) modal.style.display='none'; });
+    })();
+  </script>
 </body>
 </html>
+
