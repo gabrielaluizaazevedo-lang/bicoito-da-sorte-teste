@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Biscoito da Sorte (Horóscopo)</title>
+  <title>Biscoito da Sorte (com Código Diário)</title>
   <style>
     :root{--bg:#f5f7fb;--card:#ffffff;--accent:#d97706;--text:#0f172a;}
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
@@ -17,13 +17,18 @@
     @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
     #fortuneText{display:none;margin-top:10px;font-size:18px;line-height:1.4}
     .fortuneBtn{margin-top:14px;padding:10px 14px;border-radius:8px;border:0;font-weight:700;cursor:pointer;background:linear-gradient(90deg,#f59e0b,#f97316);color:white;display:none;}
+    .code-box{margin-top:20px;}
+    .code-input{padding:10px;border:1px solid #ccc;border-radius:6px;font-size:16px;width:180px;text-align:center;}
   </style>
 </head>
 <body>
   <main class="page">
     <h1>Biscoito da Sorte 🍪</h1>
-    <p class="instruction">Quando o biscoito aparecer, clique nele e veja sua sorte!</p>
-    <button id="openCookieBtn" class="btn">Abrir Biscoito da Sorte</button>
+    <p class="instruction">Digite o código da sorte do dia para liberar seu biscoito!</p>
+    <div class="code-box">
+      <input id="codeInput" type="text" class="code-input" maxlength="6" placeholder="Código do dia" />
+    </div>
+    <button id="openCookieBtn" class="btn">Validar Código</button>
   </main>
 
   <div id="fortuneModal" class="fortune-modal" role="dialog" aria-modal="true" aria-hidden="true">
@@ -64,6 +69,25 @@
       const cookie = document.getElementById('cookie');
       const fortuneText = document.getElementById('fortuneText');
       const fortuneBtn = document.getElementById('fortuneBtn');
+      const codeInput = document.getElementById('codeInput');
+
+      function getDailyCode(){
+        const d = new Date();
+        const day = d.getDate();
+        const month = d.getMonth() + 1;
+        const year = d.getFullYear().toString().slice(-2); // últimos 2 dígitos do ano
+        return `${day}${month}${year}`; // ex: 3925 para 03/09/2025
+      }
+
+      function validateCode(){
+        const todayCode = getDailyCode();
+        const userCode = codeInput.value.trim();
+        if(userCode === todayCode){
+          openModal();
+        } else {
+          alert("Código inválido! Esse não é o código da sorte de hoje ✨");
+        }
+      }
 
       function openModal(){
         const today = new Date().toISOString().split('T')[0];
@@ -101,7 +125,7 @@
         }, 500);
       }
 
-      openCookieBtn.addEventListener('click', openModal);
+      openCookieBtn.addEventListener('click', validateCode);
       cookie.addEventListener('click', showFortune);
       fortuneBtn.addEventListener('click', () => { modal.style.display='none'; });
 
@@ -111,4 +135,5 @@
   </script>
 </body>
 </html>
+
 
